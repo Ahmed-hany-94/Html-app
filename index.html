@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الموظفين</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>جاري التحميل...</p>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="logo">
+                <i class="fas fa-user-tie"></i>
+                <h1>نظام إدارة الموظفين</h1>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="fileNumber" placeholder="رقم الملف" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="phoneNumber" placeholder="رقم الهاتف" required>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="الرقم السري" required>
+                    <span class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                
+                <div class="options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="stayLoggedIn">
+                        <span class="checkmark"></span>
+                        البقاء متصلاً
+                    </label>
+                    
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="rememberData">
+                        <span class="checkmark"></span>
+                        تذكر بياناتي
+                    </label>
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span>تسجيل الدخول</span>
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainPage" class="page">
+        <div class="header">
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="userName">أحمد محمد علي</h3>
+                    <div class="user-data">
+                        <span><i class="fas fa-id-card"></i> رقم الملف: <span id="userFileNumber">12345</span></span>
+                        <span><i class="fas fa-building"></i> الفرع: <span id="userBranch">الفرع الرئيسي</span></span>
+                        <span><i class="fas fa-sitemap"></i> الإدارة: <span id="userDepartment">إدارة المبيعات</span></span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <div class="logout-btn" onclick="logout()" title="تسجيل الخروج">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="notifications-section">
+            <div class="search-container">
+                <div class="search-header">
+                    <h3><i class="fas fa-bell"></i> الإشعارات</h3>
+                    <div class="header-buttons">
+                        <button class="refresh-btn" id="refreshBtn" onclick="refreshNotifications()" title="تحديث الإشعارات">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="search-toggle" id="searchToggle" onclick="toggleSearch()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="search-controls" id="searchControls">
+                    <div class="search-input-container">
+                        <input type="text" 
+                               class="search-input" 
+                               id="searchInput"
+                               placeholder="البحث في الإشعارات..."
+                               oninput="handleSearchInput(event)">
+                        <i class="fas fa-search search-icon"></i>
+                        <button class="clear-search" id="clearSearch" onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterByType('all')">الكل</button>
+                        <button class="filter-btn" onclick="filterByType('رواتب')">رواتب</button>
+                        <button class="filter-btn" onclick="filterByType('مصروفات')">مصروفات</button>
+                        <button class="filter-btn" onclick="filterByType('عام')">عام</button>
+                    </div>
+                </div>
+                
+                <div class="search-results-info" id="searchResultsInfo" style="display: none;"></div>
+            </div>
+            
+            <div id="notificationsList" class="notifications-list">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item active" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item" id="adminNavItem" onclick="showPage('adminPage')" style="display: none;">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div></div>
+    </div>
+
+    <!-- Salary Page -->
+    <div id="salaryPage" class="page">
+        <div class="page-header">
+            <h2><i class="fas fa-money-bill-wave"></i> الرواتب</h2>
+        </div>
+        
+        <div class="content">
+            <button class="primary-btn" onclick="showSalaryData()">
+                <i class="fas fa-eye"></i>
+                عرض بيانات الراتب
+            </button>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item active" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item" id="adminNavItem2" onclick="showPage('adminPage')" style="display: none;">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expenses Page -->
+    <div id="expensesPage" class="page">
+        <div class="page-header">
+            <h2><i class="fas fa-receipt"></i> المصروفات</h2>
+        </div>
+        
+        <div class="content">
+            <button class="primary-btn" onclick="showExpensesData()">
+                <i class="fas fa-eye"></i>
+                عرض بيانات المصروفات
+            </button>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item active" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item" id="adminNavItem3" onclick="showPage('adminPage')" style="display: none;">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Page -->
+    <div id="performancePage" class="page">
+        <div class="page-header">
+            <h2><i class="fas fa-chart-line"></i> تقارير الأداء الشهرية</h2>
+        </div>
+        
+        <div class="content">
+            <button class="primary-btn" onclick="showPerformanceData()">
+                <i class="fas fa-eye"></i>
+                عرض بيانات الأداء الشهري
+            </button>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item active" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item" id="adminNavItem4" onclick="showPage('adminPage')" style="display: none;">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profilePage" class="page">
+        <div class="page-header">
+            <h2><i class="fas fa-user-cog"></i> إدارة الصفحة الشخصية</h2>
+        </div>
+        
+        <div class="content">
+            <div class="profile-buttons">
+                <button class="profile-btn" onclick="showPasswordModal()">
+                    <i class="fas fa-key"></i>
+                    إدارة الحساب
+                </button>
+                
+                <button class="profile-btn" onclick="showReportModal()">
+                    <i class="fas fa-bug"></i>
+                    الإبلاغ عن مشكلة
+                </button>
+            </div>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item active" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item" id="adminNavItem5" onclick="showPage('adminPage')" style="display: none;">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="page">
+        <div class="page-header">
+            <h2><i class="fas fa-crown"></i> لوحة المسؤول</h2>
+        </div>
+        
+        <div class="content">
+            <div class="admin-section">
+                <h3><i class="fas fa-bell"></i> إدارة الإشعارات</h3>
+                <button class="primary-btn" onclick="showNotificationForm()">
+                    <i class="fas fa-plus"></i>
+                    إضافة إشعار جديد
+                </button>
+                
+                <button class="secondary-btn" onclick="showOldNotifications()">
+                    <i class="fas fa-history"></i>
+                    عرض الإشعارات القديمة
+                </button>
+                
+                <div id="adminNotificationsList" class="admin-notifications">
+                    <!-- Admin notifications list -->
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h3><i class="fas fa-clipboard-list"></i> إدارة البلاغات</h3>
+                <button class="secondary-btn" onclick="showReportsPage()">
+                    <i class="fas fa-clipboard-list"></i>
+                    عرض البلاغات
+                </button>
+            </div>
+        </div>
+        
+        <div class="navigation-bar">
+            <div class="nav-item" onclick="showPage('mainPage')">
+                <i class="fas fa-home"></i>
+                <span>الرئيسية</span>
+            </div>
+            <div class="nav-item" onclick="showPage('salaryPage')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>الرواتب</span>
+            </div>
+            <div class="nav-item" onclick="showPage('expensesPage')">
+                <i class="fas fa-receipt"></i>
+                <span>المصروفات</span>
+            </div>
+            <div class="nav-item" onclick="showPage('performancePage')">
+                <i class="fas fa-chart-line"></i>
+                <span>تقارير الأداء</span>
+            </div>
+            <div class="nav-item" onclick="showPage('profilePage')">
+                <i class="fas fa-user-cog"></i>
+                <span>الملف الشخصي</span>
+            </div>
+            <div class="nav-item active" onclick="showPage('adminPage')">
+                <i class="fas fa-crown"></i>
+                <span>المسؤول</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay">
+        <!-- Salary Modal -->
+        <div id="salaryModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-money-bill-wave"></i> بيانات الراتب</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div id="salaryMonths" class="months-list">
+                    <!-- Salary months will be populated here -->
+                </div>
+                <div id="salaryDetails" class="salary-details" style="display: none;">
+                    <div class="total-amount">
+                        <span>إجمالي الراتب: </span>
+                        <span id="totalSalary" class="amount">0 ج.م</span>
+                        <span class="payer">جهة الصرف: <span id="salaryPayer">الخزانة العامة</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Modal -->
+        <div id="expensesModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> بيانات المصروفات</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div id="expensesDates" class="dates-list">
+                    <!-- Expenses dates will be populated here -->
+                </div>
+                <div id="expensesDetails" class="expenses-details" style="display: none;">
+                    <div class="total-amount">
+                        <span>إجمالي المصروفات: </span>
+                        <span id="totalExpenses" class="amount">0 ج.م</span>
+                        <span class="payer">جهة الصرف: <span id="expensesPayer">الخزانة العامة</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Management Modal -->
+        <div id="accountModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> إدارة الحساب</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('passwordTab')">تغيير كلمة المرور</button>
+                    <button class="tab-btn" onclick="showTab('phoneTab')">تغيير رقم الهاتف</button>
+                </div>
+                
+                <div id="passwordTab" class="tab-content active">
+                    <form id="changePasswordForm">
+                        <div class="input-group">
+                            <input type="password" placeholder="كلمة المرور الحالية" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" placeholder="كلمة المرور الجديدة" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" placeholder="تأكيد كلمة المرور الجديدة" required>
+                        </div>
+                        <button type="submit" class="primary-btn">تحديث كلمة المرور</button>
+                    </form>
+                </div>
+                
+                <div id="phoneTab" class="tab-content">
+                    <form id="changePhoneForm">
+                        <div class="input-group">
+                            <input type="tel" placeholder="رقم الهاتف الجديد" required>
+                        </div>
+                        <button type="submit" class="primary-btn">تحديث رقم الهاتف</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Modal -->
+        <div id="reportModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-bug"></i> الإبلاغ عن مشكلة</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('newReportTab')">إبلاغ عن مشكلة</button>
+                    <button class="tab-btn" onclick="showTab('reportsHistoryTab')">متابعة البلاغات السابقة</button>
+                </div>
+                
+                <div id="newReportTab" class="tab-content active">
+                    <form id="newReportForm">
+                        <div class="input-group">
+                            <input type="text" placeholder="عنوان المشكلة" required>
+                        </div>
+                        <div class="input-group">
+                            <textarea placeholder="وصف المشكلة" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="primary-btn">إرسال البلاغ</button>
+                    </form>
+                </div>
+                
+                <div id="reportsHistoryTab" class="tab-content">
+                    <div id="reportsHistory" class="reports-list">
+                        <!-- Reports history will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Form Modal -->
+        <div id="notificationFormModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> إضافة إشعار جديد</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <form id="notificationForm">
+                    <div class="input-group">
+                        <input type="text" id="notificationTitle" placeholder="عنوان الإشعار" required>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="notificationContent" placeholder="محتوى الإشعار" rows="4" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <select id="notificationType" required>
+                            <option value="">اختر نوع الإشعار</option>
+                            <option value="رواتب">رواتب</option>
+                            <option value="مصروفات">مصروفات</option>
+                            <option value="عام">إشعارات عامة</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="primary-btn">إضافة الإشعار</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Old Notifications Modal -->
+        <div id="oldNotificationsModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> الإشعارات القديمة</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div id="oldNotificationsList" class="old-notifications-list">
+                    <!-- Old notifications will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Modal -->
+        <div id="performanceModal" class="modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> تقارير الأداء الشهرية</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <div id="performanceMonths" class="months-list">
+                    <!-- Performance months will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
